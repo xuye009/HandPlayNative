@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">HandscapeAndroidSDK</string>
+
+
+    <string name="left_1">左1</string>
+    <string name="left_2">左2</string>
+    <string name="right_1">右1</string>
+    <string name="right_2">右2</string>
+
+    <string name="camera_take">拍照</string>
+    <string name="camera_return">返回</string>
+    <string name="camera_touch">缩放</string>
+    <string name="camera_rafah">调节</string>
+</resources>

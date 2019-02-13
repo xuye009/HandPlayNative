@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">HandPlay</string>
+
+    <string name="dever_activation">正在激活驱动，请勿触摸屏幕</string>
+</resources>
