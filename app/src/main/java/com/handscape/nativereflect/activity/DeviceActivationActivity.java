@@ -33,11 +33,13 @@ public class DeviceActivationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_deviceactivation);
         initview();
         init();
+
+        DeviceConnectActivity.startActivity(this);
+        finish();
     }
 
     private void initview() {
         textView = findViewById(R.id.text);
-
     }
 
     private void init() {

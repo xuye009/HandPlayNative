@@ -27,6 +27,25 @@
         <activity
             android:name="com.handscape.nativereflect.activity.DeviceActivationActivity"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.handscape.nativereflect.activity.DeviceConnectActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.handscape.nativereflect.activity.TouchTestActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.handscape.nativereflect.activity.HomeActivity"
+            android:screenOrientation="portrait" />
+
+
+        <service
+            android:name="com.handscape.nativereflect.service.HandPlayService"
+            android:exported="true" />
+
+
     </application>
 
 </manifest>

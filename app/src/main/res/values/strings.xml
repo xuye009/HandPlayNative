@@ -1,5 +1,26 @@
 <resources>
     <string name="app_name">HandPlay</string>
 
+
+    <string name="enable_location">打开位置服务</string>
+    <string name="location_enable">请打开位置服务，否则无法搜索到蓝牙设备</string>
     <string name="dever_activation">正在激活驱动，请勿触摸屏幕</string>
+    <string name="scan_device_list">扫描到的设备</string>
+    <string name="scanning">扫描中</string>
+    <string name="scann_finish">扫描结束</string>
+    <string name="scann_failed">扫描失败</string>
+    <string name="connecting_device">正在连接</string>
+    <string name="connect_success">连接成功</string>
+
+    <string name="next">下一步</string>
+
+    <string name="rescan">重新扫描</string>
+    <string name="add_app">添加应用</string>
+    <string name="back">返回</string>
+
+    <string name="choiceconfig">选择</string>
+    <string name="addconfig">添加</string>
+    <string name="saveconfig">保存</string>
+    <string name="removeconfig">清空</string>
+    <string name="close">关闭</string>
 </resources>

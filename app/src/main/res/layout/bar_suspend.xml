@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/bar"
+        android:layout_width="@dimen/dp_50"
+        android:layout_height="@dimen/dp_50"
+        android:background="@drawable/bar_connect" />
+
+    <LinearLayout
+        android:id="@+id/configlayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/choice"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="@string/choiceconfig"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_16" />
+
+        <Button
+            android:id="@+id/add"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="@string/addconfig"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_16" />
+
+        <Button
+            android:id="@+id/save"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="@string/saveconfig"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_16" />
+
+        <Button
+            android:id="@+id/clear"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="@string/removeconfig"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_16" />
+
+        <Button
+            android:id="@+id/close"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="@string/close"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_16" />
+
+    </LinearLayout>
+</LinearLayout>
+
