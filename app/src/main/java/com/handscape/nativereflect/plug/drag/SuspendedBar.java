@@ -1,9 +1,13 @@
 package com.handscape.nativereflect.plug.drag;
 
 import android.content.Context;
+import android.graphics.PixelFormat;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.handscape.nativereflect.R;
@@ -22,6 +26,8 @@ public class SuspendedBar extends BaseDragView implements View.OnClickListener {
 
     //选择、添加、保存、清空、关闭
     private View mChoiceView, mAddView, mSaveView, mClearView, mCloseView;
+
+    private WindowManager.LayoutParams mBarLayoutParams;
 
     public SuspendedBar(@NonNull Context context) {
         super(context);
@@ -78,27 +84,47 @@ public class SuspendedBar extends BaseDragView implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if(v==mBar){
+        if (v == mBar) {
             //点击悬浮球
-            if(!isOpen){
+            if (!isOpen) {
                 mconfigLayout.setVisibility(View.VISIBLE);
             }
-        }else if(v==mChoiceView){
+        } else if (v == mChoiceView) {
             //选择配置
 
-        }else if(v==mAddView){
+        } else if (v == mAddView) {
             //添加配置
 
-        }else if(v==mSaveView){
+        } else if (v == mSaveView) {
             //保存配置
 
-        }else if(v==mClearView){
+        } else if (v == mClearView) {
             //清空配置
 
-        }else if(v==mCloseView){
+        } else if (v == mCloseView) {
             //关闭配置
 
         }
-
     }
+
+    /**
+     * 获取页面属性
+     * @return
+     */
+    public WindowManager.LayoutParams getLayoutPArams() {
+        mBarLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mBarLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else {
+            mBarLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+        }
+        mBarLayoutParams.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE;
+        mBarLayoutParams.gravity = Gravity.LEFT | Gravity.TOP;
+        mBarLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        mBarLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        mBarLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        mBarLayoutParams.format = PixelFormat.RGBA_8888;
+        return mBarLayoutParams;
+    }
+
 }

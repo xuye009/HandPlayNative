@@ -15,6 +15,10 @@ public class PlugManager {
     public PlugManager(Context context){
         this.context=context;
         this.windowManager= (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-
     }
+
+
+    public
+
+
 }
