@@ -88,6 +88,12 @@ public class PlugMainBar extends FrameLayout implements View.OnClickListener, IH
         } else if (v == mCloseView) {
             //关闭配置
             plugManager.removeView(this);
+            for(Integer key:listHashMap.keySet()){
+                for(Keyview keyview:listHashMap.get(key)){
+                    plugManager.removeView(keyview);
+                    plugManager.getHandPlayService().getHsKeyBeanManager().addKeyMap(key,keyview.getmKeydata());
+                }
+            }
             plugManager.showFloatBar();
         }
     }

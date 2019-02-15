@@ -1,5 +1,7 @@
 package com.handscape.nativereflect;
 
+import android.util.Log;
+
 import com.handscape.sdk.bean.HSBaseKeyBean;
 import com.handscape.sdk.inf.IHSKeyBeanManager;
 
@@ -26,7 +28,9 @@ public class HSKeyBeanManagerImpl implements IHSKeyBeanManager {
         if (keyBeans == null) {
             keyBeans = new ArrayList<>();
         }
+        keyBeans.clear();
         keyBeans.add(point);
+        Log.v("xuyeCmd","add");
         keyMap.put(keycode, keyBeans);
     }
 

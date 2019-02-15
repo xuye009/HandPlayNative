@@ -1,14 +1,17 @@
 package com.handscape.nativereflect;
 
 import android.graphics.PointF;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.handscape.nativereflect.inf.IHSReceiveEvent;
+import com.handscape.sdk.bean.HSBaseKeyBean;
 import com.handscape.sdk.inf.IHShandleTouchEvent;
 import com.handscape.sdk.touch.HSTouchCommand;
 import com.handscape.sdk.util.HSTouchMapKeyUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HSHandleTouchEventImpl implements IHShandleTouchEvent {
@@ -50,15 +53,18 @@ public class HSHandleTouchEventImpl implements IHShandleTouchEvent {
             }
         }
         if (ihsReceiveEvent != null) {
-            ihsReceiveEvent.receive(keycode,touchAction, pointerID, eventX, eventY);
+            ihsReceiveEvent.receive(keycode, touchAction, pointerID, eventX, eventY);
         }
 
         HSTouchCommand[] commands = new HSTouchCommand[1];
-        if(hsKeyBeanManager!=null&&hsKeyBeanManager.getBean(pointerID)!=null){
-            PointF pointF= hsKeyBeanManager.getBean(pointerID).map(pointerID,0,touchAction,eventX,eventY,keycode);
+
+        Log.v("xuyeCmd","111111111111");
+        if (hsKeyBeanManager != null && hsKeyBeanManager.getDefineKeyMap().get(keycode) != null && hsKeyBeanManager.getDefineKeyMap().get(keycode).size() > 0) {
+            List<HSBaseKeyBean> baseKeyBeans = hsKeyBeanManager.getDefineKeyMap().get(keycode);
+            PointF pointF = baseKeyBeans.get(0).map(pointerID, 0, touchAction, eventX, eventY, keycode);
             HSTouchCommand cmd = HSTouchCommand.newCommand(pointerID, keycode, touchAction, (int) pointF.x, (int) pointF.y);
             commands[0] = cmd;
-        }else{
+        } else {
             HSTouchCommand cmd = HSTouchCommand.newCommand(pointerID, keycode, touchAction, (int) eventX, (int) eventY);
             commands[0] = cmd;
         }
