@@ -6,6 +6,13 @@ import android.util.Log;
 public class HSTouchCommand {    //class tf
     public static int MAX_TOUCH_COMMAND_COUNT = 32;
     public static int CUSTOM_TOUCH_START_INDEX = 1;
+
+    //单击
+    public static final int TYPE_Single=0;
+    //多击
+    public static final int TYPE_MULT=1;
+
+
     public static boolean[] commandEvents = new boolean[MAX_TOUCH_COMMAND_COUNT];
 
     private long eventTime;
@@ -14,11 +21,12 @@ public class HSTouchCommand {    //class tf
     private int mPx;
     private int mPy;
 
+    //动作类型，单击、多击
+    private int actionType;
+
     private final int mkeyCode;//触摸命令所属的keyCode
     private int mIndex;//事件所处的顺序
     private long mDelayTime;//距离上一个事件的间隔
-    private boolean isRemoveOrder = false;//是否从命令队列移除
-    private boolean orderFlag = false;//是否是命令指令
 
     public static int setNewTouchDown() {
         synchronized (commandEvents) {
@@ -46,35 +54,19 @@ public class HSTouchCommand {    //class tf
         }
     }
 
-    public boolean isRemoveOrder() {
-        return isRemoveOrder;
-    }
-
-    public boolean isOrderFlag() {
-        return orderFlag;
-    }
-
-    public void setOrderFlag(boolean orderFlag) {
-        this.orderFlag = orderFlag;
-    }
-
-    public void setRemoveOrder(boolean removeOrder) {
-        isRemoveOrder = removeOrder;
-    }
-
     public static boolean isInvalidTouch(int touchId) {
         return touchId > MAX_TOUCH_COMMAND_COUNT || touchId < CUSTOM_TOUCH_START_INDEX;
     }
 
     public static HSTouchCommand makeCommand(int pointerId, int mkeyCode, int action, int pX, int pY, long time, int mIndex, long mDelayTime) {
-        return new HSTouchCommand(pointerId, mkeyCode, action, pX, pY, time, mIndex, mDelayTime);
+        return new HSTouchCommand(pointerId, mkeyCode, action, pX, pY, time, mIndex, mDelayTime,TYPE_Single);
     }
 
     public static HSTouchCommand newCommand(int pointerId, int mkeyCode, int action, int px, int py) {
-        return new HSTouchCommand(pointerId, mkeyCode, action, px, py, System.currentTimeMillis(), 0, 0);
+        return new HSTouchCommand(pointerId, mkeyCode, action, px, py, System.currentTimeMillis(), 0, 0,TYPE_Single);
     }
 
-    HSTouchCommand(int pointerId, int mkeyCode, int action, int px, int py, long time, int mIndex, long mDelayTime) {
+    HSTouchCommand(int pointerId, int mkeyCode, int action, int px, int py, long time, int mIndex, long mDelayTime,int mActionType) {
         this.mkeyCode = mkeyCode;
         this.mPointerId = pointerId;
         this.action = action;
@@ -83,6 +75,7 @@ public class HSTouchCommand {    //class tf
         this.mPy = py;
         this.mIndex = mIndex;
         this.mDelayTime = mDelayTime;
+        this.actionType=mActionType;
     }
 
     public void setPointerId(int mPointerId) {

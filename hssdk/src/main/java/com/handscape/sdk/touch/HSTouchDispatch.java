@@ -1,20 +1,11 @@
 package com.handscape.sdk.touch;
 
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.ViewGroup;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import com.handscape.sdk.HSManager;
 import com.handscape.sdk.inf.IHSTouchCmdReceive;
 import com.handscape.sdk.util.HSMultipleMotionBuilder;
 import com.handscape.sdk.util.HSPacketData;
@@ -72,7 +63,6 @@ public class HSTouchDispatch implements Runnable {
         mDispatchThread = new Thread(this);
         mDispatchThread.setPriority(Thread.MAX_PRIORITY);
         mDispatchThread.start();
-
     }
 
 
@@ -190,7 +180,6 @@ public class HSTouchDispatch implements Runnable {
                 return;
             }
             if (!isEmptyPending) {
-
                 if(touchCmdReceive!=null){
                     touchCmdReceive.onCmdStrReceive(command);
                     int rotation = HSTouchMapKeyUtils.getScreenRotation();

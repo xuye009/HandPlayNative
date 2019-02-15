@@ -253,21 +253,6 @@ public class HSBluetoothGattCmd extends HSBluetoothGatt {
             mThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
-//                    int screenRotation = HSTouchMapKeyUtils.getScreenRotation();
-//                    Log.v(TAG,"ratation "+screenRotation);
-//                    int[] size = HSTouchMapKeyUtils.getScreenSize();
-//                    float tempX = eventX;
-//                    float eventX_1=eventX;
-//                    float eventY_1=eventY;
-//                    //坐标转化，在命令生成之前就进行坐标转化
-//                    if (screenRotation == 90) {
-//                        eventX_1 = eventY;
-//                        eventY_1 = size[0] - tempX;
-//                    }
-//                    if (screenRotation == 270) {
-//                        eventX_1 = size[1] - eventY;
-//                        eventY_1 = tempX;
-//                    }
                     try {
                         if (defineHsTouchEventProcess != null) {
                             HSTouchCommand[] commands = defineHsTouchEventProcess.handleTouchEvent(touchAction, pointerID, eventX, eventY, windowWidth, windowHeight);
@@ -276,7 +261,6 @@ public class HSBluetoothGattCmd extends HSBluetoothGatt {
                             }
                         } else {
                             HSTouchCommand cmd = HSTouchCommand.newCommand(pointerID, 0, touchAction, (int) eventX, (int) eventY);
-
                             if (dispatch != null && cmd != null) {
                                 dispatch.addCmd(cmd);
                             }

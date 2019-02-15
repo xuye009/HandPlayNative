@@ -11,6 +11,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.handscape.nativereflect.HSHandleTouchEventImpl;
+import com.handscape.nativereflect.HSKeyBeanManagerImpl;
 import com.handscape.nativereflect.command.DeviceConnectReceiveImpl;
 import com.handscape.nativereflect.plug.PlugManager;
 import com.handscape.sdk.HSManager;
@@ -47,12 +49,21 @@ public class HandPlayService extends Service implements IHSTouchCmdReceive {
     private FileOutputStream fileOutputStream;
     private FileChannel fileChannel;
 
+    private HSHandleTouchEventImpl hsHandleTouchEvent;
+
+    private HSKeyBeanManagerImpl hsKeyBeanManager;
+
     @Override
     public void onCreate() {
         super.onCreate();
         //实例化蓝牙SDK管理器
         mSdkManager = HSManager.getinstance(getApplicationContext(), DeviceConnectReceiveImpl.getInstance());
         mSdkManager.setTouchCmdReceive(this);
+        //按键管理
+        hsKeyBeanManager=new HSKeyBeanManagerImpl();
+        hsHandleTouchEvent =HSHandleTouchEventImpl.getInstance(hsKeyBeanManager);
+        mSdkManager.setDefineHsTouchEventProcess(hsHandleTouchEvent);
+        //其它线程
         handlerThread = new HandlerThread("");
         mFileWriteThread=new HandlerThread("filewrite");
         handlerThread.start();
@@ -73,7 +84,6 @@ public class HandPlayService extends Service implements IHSTouchCmdReceive {
         //解析参数
         if (intent != null && intent.getExtras() != null) {
             Bundle bundle = intent.getExtras();
-
             if (bundle.getBoolean(ServiceStartHelp.SHOW_PLUG, false)) {
                 //显示悬浮球
                 String pkgName = bundle.getString(ServiceStartHelp.PKGNAME);
@@ -86,6 +96,14 @@ public class HandPlayService extends Service implements IHSTouchCmdReceive {
 
     public HSManager getmSdkManager() {
         return mSdkManager;
+    }
+
+    public HSKeyBeanManagerImpl getHsKeyBeanManager() {
+        return hsKeyBeanManager;
+    }
+
+    public HSHandleTouchEventImpl getHsHandleTouchEvent() {
+        return hsHandleTouchEvent;
     }
 
     public void runWithOutUIThread(Runnable runnable) {

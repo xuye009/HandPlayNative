@@ -89,11 +89,11 @@ public class HSMultipleMotionBuilder {
             if (iCommondManager != null) {
                 HSBaseKeyBean hsBaseKeyBean= iCommondManager.getBean(iPointId);
                 if(hsBaseKeyBean!=null){
-                    int pKeyCode = hsBaseKeyBean.getKeyCode();
-                    int pIndex = hsBaseKeyBean.getKeyIndex();
+                    int pKeyCode = hsBaseKeyBean.getHsKeyData().getKeyCode();
+                    int pIndex = hsBaseKeyBean.getHsKeyData().getKeyIndex();
                     int pId = hsBaseKeyBean.getHsKeyData().getKeyPointId();
                     if (pId == iPointId) {
-                        PointF mapPoint = hsBaseKeyBean.map(mainPtrId, hsBaseKeyBean.getKeyIndex(), action, touchX, touchY, pKeyCode, iCommondManager.isInConfigMode(), false);
+                        PointF mapPoint = hsBaseKeyBean.map(mainPtrId, hsBaseKeyBean.getHsKeyData().getKeyIndex(), action, touchX, touchY, pKeyCode);
                         if (mapPoint != null) {
                             touchX = mapPoint.x;
                             touchY = mapPoint.y;

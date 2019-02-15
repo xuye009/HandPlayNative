@@ -224,7 +224,7 @@ public class HSTouchMapKeyUtils {
             List<HSBaseKeyBean> keyBean = map.get(key);
             for (int i = 0; i < keyBean.size(); i++) {
                 HSBaseKeyBean bean = keyBean.get(i);
-                PointF point = bean.getPoint();
+                PointF point = bean.getHsKeyData().getPoint();
                 if (x == point.x && y == point.y) {
                     keycode = key;
                     break;

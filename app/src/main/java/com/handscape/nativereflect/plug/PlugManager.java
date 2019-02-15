@@ -6,14 +6,14 @@ import android.view.WindowManager;
 
 import com.handscape.nativereflect.plug.drag.FloatBar;
 import com.handscape.nativereflect.plug.drag.PlugMainBar;
+import com.handscape.nativereflect.service.HandPlayService;
 
 /**
  * 插件管理类
  */
-public class PlugManager {
+public class PlugManager{
 
 
-    private Context context;
     private WindowManager windowManager;
     private String pkgName;
 
@@ -23,17 +23,22 @@ public class PlugManager {
     private FloatBar floatBar;
     //设置界面
     private PlugMainBar plugMainBar;
+    //服务
+    private HandPlayService handPlayService;
 
+    public HandPlayService getHandPlayService() {
+        return handPlayService;
+    }
 
-    public PlugManager(Context context) {
-        this.context = context;
-        this.windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    public PlugManager(HandPlayService handPlayService) {
+        this.handPlayService=handPlayService;
+        this.windowManager = (WindowManager) handPlayService.getSystemService(Context.WINDOW_SERVICE);
     }
 
     public void show(String pkgName) {
         //显示悬浮球
         this.pkgName = pkgName;
-        floatBar = FloatBar.getinstance(context, true, this);
+        floatBar = FloatBar.getinstance(handPlayService, true, this);
         windowManager.addView(floatBar, floatBar.getmBarLayoutParams());
     }
 
@@ -42,6 +47,9 @@ public class PlugManager {
     }
 
     public void removeView(View view) {
+        if(view instanceof PlugMainBar){
+            handPlayService.getHsHandleTouchEvent().setIhsReceiveEvent(null);
+        }
         windowManager.removeView(view);
     }
 
@@ -53,10 +61,15 @@ public class PlugManager {
 
     //显示设置菜单
     public void showPlugMain() {
-        plugMainBar = new PlugMainBar(context, this);
+        plugMainBar = new PlugMainBar(handPlayService, this);
+        handPlayService.getHsHandleTouchEvent().setIhsReceiveEvent(plugMainBar);
         windowManager.addView(plugMainBar, plugMainBar.getLayoutParams());
         //隐藏悬浮球
         floatBar.setVisibility(View.GONE);
+    }
+
+    public void addView(View view, WindowManager.LayoutParams params){
+        windowManager.addView(view,params);
     }
 
 

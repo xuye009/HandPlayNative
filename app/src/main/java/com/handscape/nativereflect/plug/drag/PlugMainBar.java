@@ -13,13 +13,22 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.handscape.nativereflect.R;
+import com.handscape.nativereflect.inf.IHSReceiveEvent;
 import com.handscape.nativereflect.plug.PlugManager;
+import com.handscape.sdk.inf.IHSTouchCmdReceive;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * 点击悬浮小球后的设置菜单
  */
-public class PlugMainBar extends FrameLayout implements View.OnClickListener {
+public class PlugMainBar extends FrameLayout implements View.OnClickListener, IHSReceiveEvent {
 
+
+
+    public static final String TAG=PlugMainBar.class.getName();
 
     protected PlugManager plugManager;
     private View mLayout, mconfigLayout;
@@ -31,9 +40,12 @@ public class PlugMainBar extends FrameLayout implements View.OnClickListener {
 
     private WindowManager.LayoutParams mBarLayoutParams;
 
+    private HashMap<Integer,List<Keyview>> listHashMap=new HashMap<>();
+
     public PlugMainBar(@NonNull Context context, PlugManager plugManager) {
         super(context);
         this.plugManager=plugManager;
+        setTag(TAG);
         initview();
     }
 
@@ -100,4 +112,25 @@ public class PlugMainBar extends FrameLayout implements View.OnClickListener {
         return mBarLayoutParams;
     }
 
+    @Override
+    public void receive(int keycode, int touchAction, int pointerID, float eventX, float eventY) {
+        //接收到触摸
+        List<Keyview> keyviewList= listHashMap.get(keycode);
+        if(keyviewList==null){
+            keyviewList=new ArrayList<>();
+        }
+        if(keyviewList.size()==0){
+            Keyview view=new Keyview(getContext(),plugManager,keycode);
+            view.setPosition((int)eventX,(int) eventY);
+            view.show();
+            keyviewList.add(view);
+            listHashMap.put(keycode,keyviewList);
+        }else{
+//            Keyview view=new Keyview(getContext(),plugManager,keycode);
+//            view.setPosition((int)eventX,(int) eventY);
+//            view.show();
+        }
+
+
+    }
 }
