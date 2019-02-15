@@ -8,4 +8,6 @@
 
     <color name="white">#ffffff</color>
     <color name="tips_red">#FF6347</color>
+    <color name="dialog_title_color">#333333</color>
+    <color name="dialog_extra_color">#666666</color>
 </resources>

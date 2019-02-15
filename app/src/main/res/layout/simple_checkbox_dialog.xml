@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:n1="http://schemas.android.com/apk/res/android"
+    n1:layout_width="fill_parent"
+    n1:layout_height="fill_parent"
+    n1:orientation="vertical">
+
+    <TextView
+        n1:id="@+id/sc_dialog_title"
+        n1:layout_width="fill_parent"
+        n1:layout_height="wrap_content"
+        n1:layout_marginTop="22.0dip"
+        n1:gravity="start"
+        n1:paddingStart="24.0dip"
+        n1:paddingEnd="24.0dip"
+        n1:text="@string/vivox21_screen_mode_title"
+        n1:textColor="@color/dialog_title_color"
+        n1:textSize="18.0sp" />
+
+    <TextView
+        n1:id="@+id/sc_dialog_message"
+        n1:layout_width="fill_parent"
+        n1:layout_height="wrap_content"
+        n1:layout_marginTop="16.0dip"
+        n1:gravity="start"
+        n1:paddingStart="24.0dip"
+        n1:paddingEnd="24.0dip"
+        n1:text="@string/vivox21_screen_mode_message"
+        n1:textColor="@color/dialog_title_color"
+        n1:textSize="14.0sp" />
+
+    <LinearLayout
+        n1:layout_width="fill_parent"
+        n1:layout_height="wrap_content"
+        n1:layout_marginTop="16.0dip"
+        n1:orientation="horizontal"
+        n1:paddingStart="24.0dip"
+        n1:paddingEnd="24.0dip">
+
+        <CheckBox
+            n1:id="@+id/sc_dialog_checkbox"
+            n1:layout_width="wrap_content"
+            n1:layout_height="wrap_content" />
+
+        <TextView
+            n1:layout_width="wrap_content"
+            n1:layout_height="wrap_content"
+            n1:text="@string/fdialog_assert_back_reminder"
+            n1:textColor="@color/dialog_extra_color"
+            n1:textSize="12.0sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        n1:layout_width="wrap_content"
+        n1:layout_height="wrap_content"
+        n1:layout_gravity="end"
+        n1:layout_marginTop="24.0dip"
+        n1:orientation="horizontal">
+
+        <Button
+            n1:id="@+id/sc_dialog_negative"
+            style="?android:borderlessButtonStyle"
+            n1:layout_width="96.0dip"
+            n1:layout_height="wrap_content"
+            n1:text="@string/cancel"
+            n1:textColor="@color/colorAccent" />
+
+        <Button
+            n1:id="@+id/sc_dialog_positive"
+            style="?android:borderlessButtonStyle"
+            n1:layout_width="96.0dip"
+            n1:layout_height="wrap_content"
+            n1:text="@string/confirm"
+            n1:textColor="@color/colorAccent" />
+    </LinearLayout>
+</LinearLayout>

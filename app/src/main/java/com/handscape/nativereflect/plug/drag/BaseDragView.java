@@ -1,7 +1,6 @@
 package com.handscape.nativereflect.plug.drag;
 
 import android.content.Context;
-import android.graphics.PointF;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
@@ -12,21 +11,26 @@ import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.handscape.nativereflect.plug.PlugManager;
+
 //可拖动的基础View
 public abstract class BaseDragView extends FrameLayout {
 
+    protected PlugManager plugManager;
     protected int screenWidth, screenHeight;
     private float startX, startY, nowX, nowY, spaceX, spaceY;
     private int moveSlop = 24;
 
     protected LayoutInflater mLayoutinflater;
+    protected WindowManager.LayoutParams mBarLayoutParams;
 
     //是否应该删除标记
     private boolean shouldDelete = false;
 
 
-    public BaseDragView(@NonNull Context context) {
+    public BaseDragView(@NonNull Context context,PlugManager plugManager) {
         super(context);
+        this.plugManager=plugManager;
         mLayoutinflater = LayoutInflater.from(context);
         init();
     }
@@ -39,18 +43,11 @@ public abstract class BaseDragView extends FrameLayout {
         windowManager.getDefaultDisplay().getRealMetrics(metrics);
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
+        mBarLayoutParams=getLayoutParams();
+        addView(getContentView());
     }
 
-    public void complate() {
-        try {
-            removeAllViews();
-            addView(getContentView());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
+    public abstract WindowManager.LayoutParams getLayoutParams();
     //按下
     protected abstract void onDown(MotionEvent event);
 
@@ -73,8 +70,8 @@ public abstract class BaseDragView extends FrameLayout {
                 startTime = SystemClock.currentThreadTimeMillis();
                 startX = event.getRawX();
                 startY = event.getRawY();
-                spaceX = getX() - startX;
-                spaceY = getY() - startY;
+                spaceX = mBarLayoutParams.x - startX;
+                spaceY = mBarLayoutParams.y - startY;
                 isMove = false;
                 return false;
             case MotionEvent.ACTION_MOVE:
@@ -118,33 +115,33 @@ public abstract class BaseDragView extends FrameLayout {
                 }
                 if (Math.abs(moveX) >= moveSlop || Math.abs(moveY) >= moveSlop) {
                     //判断如果移动，则更新位置
-                    setX(spaceX + nowX);
-                    setY(spaceY + nowY);
+                    mBarLayoutParams.x = (int) (spaceX + nowX);
+                    mBarLayoutParams.y = (int) (spaceY + nowY);
+                    plugManager.updateview(this, mBarLayoutParams);
                     onMove(event);
-                    invalidate();
                     isMove = true;
                 }
                 break;
 
             case MotionEvent.ACTION_UP://抬起
                 if (getY() <= 0) {
-                    setY(0);
+                    mBarLayoutParams.x=0;
                 }
                 if (getX() <= 0) {
-                    setX(0);
+                    mBarLayoutParams.y=0;
                 }
                 if (getX() + getWidth() > screenWidth) {
-                    setX(screenWidth - getWidth());
+                    mBarLayoutParams.x=screenWidth - getWidth();
                 }
                 if (getY() + getHeight() > screenHeight) {
-                    setY(screenHeight - getHeight());
+                    mBarLayoutParams.y=screenHeight - getHeight();
                 }
                 startX = 0;
                 startY = 0;
                 post(new Runnable() {
                     @Override
                     public void run() {
-                        onUp(getScreenPosition().x + getWidth() / 2, getScreenPosition().y + getHeight());
+                        onUp(mBarLayoutParams.x + getWidth() / 2, mBarLayoutParams.y + getHeight());
                     }
                 });
                 if (isclick() && !isMove && SystemClock.currentThreadTimeMillis() - startTime < 25) {
@@ -163,16 +160,5 @@ public abstract class BaseDragView extends FrameLayout {
         return shouldDelete;
     }
 
-
-    public final PointF getScreenPosition() {
-        PointF point = new PointF();
-        point.x = getX();
-        point.y = getY();
-//        int[] location = new int[2];
-//        getLocationOnScreen(location);
-//        point.x = location[0];
-//        point.y = location[1];
-        return point;
-    }
 
 }

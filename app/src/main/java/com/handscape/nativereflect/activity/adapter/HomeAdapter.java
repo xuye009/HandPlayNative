@@ -20,12 +20,14 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
     private Context context;
     private LayoutInflater inflater;
+    private View.OnClickListener onClickListener;
     private List<ApplicationInfo> applicationInfos = null;
 
-    public HomeAdapter(Context context, List<ApplicationInfo> applicationInfos) {
+    public HomeAdapter(Context context, List<ApplicationInfo> applicationInfos, View.OnClickListener onClickListener) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.applicationInfos = applicationInfos;
+        this.onClickListener=onClickListener;
     }
 
     @NonNull
@@ -58,14 +60,15 @@ public class HomeAdapter extends RecyclerView.Adapter {
             super(itemView);
             appIcon = itemView.findViewById(R.id.app_icon);
             appName = itemView.findViewById(R.id.app_name);
+            itemView.setOnClickListener(onClickListener);
         }
 
         public void initdata(ApplicationInfo info) {
+            itemView.setTag(info);
             Drawable setima = info.loadIcon(context.getPackageManager());
             String name = info.loadLabel(context.getPackageManager()).toString();
             appName.setText(name);
             appIcon.setImageDrawable(setima);
-            itemView.setTag(info);
         }
     }
 

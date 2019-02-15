@@ -7,7 +7,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
-import com.handscape.nativereflect.bean.AppInfo;
 
 import java.util.ArrayList;
 import java.util.List;

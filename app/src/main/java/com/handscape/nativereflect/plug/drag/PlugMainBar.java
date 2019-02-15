@@ -5,22 +5,24 @@ import android.graphics.PixelFormat;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.handscape.nativereflect.R;
+import com.handscape.nativereflect.plug.PlugManager;
 
 /**
- * 显示在应用界面的悬浮球
+ * 点击悬浮小球后的设置菜单
  */
-public class SuspendedBar extends BaseDragView implements View.OnClickListener {
+public class PlugMainBar extends FrameLayout implements View.OnClickListener {
 
 
+    protected PlugManager plugManager;
     private View mLayout, mconfigLayout;
-    //是否处于打开配置状态
-    private boolean isOpen = false;
 
     private ImageView mBar;
 
@@ -29,18 +31,14 @@ public class SuspendedBar extends BaseDragView implements View.OnClickListener {
 
     private WindowManager.LayoutParams mBarLayoutParams;
 
-    public SuspendedBar(@NonNull Context context) {
+    public PlugMainBar(@NonNull Context context, PlugManager plugManager) {
         super(context);
-    }
-
-    @Override
-    protected View getContentView() {
-        mLayout = mLayoutinflater.inflate(R.layout.bar_suspend, null);
+        this.plugManager=plugManager;
         initview();
-        return mLayout;
     }
 
     private void initview() {
+        mLayout = LayoutInflater.from(getContext()).inflate(R.layout.bar_suspend, null);
         mBar = mLayout.findViewById(R.id.bar);
         mconfigLayout = mLayout.findViewById(R.id.configlayout);
         mChoiceView = mLayout.findViewById(R.id.choice);
@@ -48,7 +46,6 @@ public class SuspendedBar extends BaseDragView implements View.OnClickListener {
         mSaveView = mLayout.findViewById(R.id.save);
         mClearView = mLayout.findViewById(R.id.clear);
         mCloseView = mLayout.findViewById(R.id.close);
-        mconfigLayout.setVisibility(View.GONE);
 
         mBar.setOnClickListener(this);
         mChoiceView.setOnClickListener(this);
@@ -56,39 +53,14 @@ public class SuspendedBar extends BaseDragView implements View.OnClickListener {
         mSaveView.setOnClickListener(this);
         mClearView.setOnClickListener(this);
         mCloseView.setOnClickListener(this);
-    }
-
-    public boolean isOpen() {
-        return isOpen;
-    }
-
-    @Override
-    protected void onDown(MotionEvent event) {
-
-    }
-
-    @Override
-    protected void onUp(float cx, float cy) {
-
-    }
-
-    @Override
-    protected void onMove(MotionEvent event) {
-
-    }
-
-    @Override
-    protected boolean isclick() {
-        return true;
+        addView(mLayout);
     }
 
     @Override
     public void onClick(View v) {
         if (v == mBar) {
             //点击悬浮球
-            if (!isOpen) {
-                mconfigLayout.setVisibility(View.VISIBLE);
-            }
+
         } else if (v == mChoiceView) {
             //选择配置
 
@@ -103,7 +75,8 @@ public class SuspendedBar extends BaseDragView implements View.OnClickListener {
 
         } else if (v == mCloseView) {
             //关闭配置
-
+            plugManager.removeView(this);
+            plugManager.showFloatBar();
         }
     }
 
@@ -111,7 +84,7 @@ public class SuspendedBar extends BaseDragView implements View.OnClickListener {
      * 获取页面属性
      * @return
      */
-    public WindowManager.LayoutParams getLayoutPArams() {
+    public WindowManager.LayoutParams getLayoutParams() {
         mBarLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mBarLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;

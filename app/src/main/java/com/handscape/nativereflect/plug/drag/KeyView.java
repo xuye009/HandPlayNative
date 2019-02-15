@@ -4,13 +4,21 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+
+import com.handscape.nativereflect.plug.PlugManager;
 
 /**
  * 按键
  */
 public class KeyView extends BaseDragView{
-    public KeyView(@NonNull Context context) {
-        super(context);
+    public KeyView(@NonNull Context context, PlugManager plugManager) {
+        super(context, plugManager);
+    }
+
+    @Override
+    public WindowManager.LayoutParams getLayoutParams() {
+        return null;
     }
 
     @Override

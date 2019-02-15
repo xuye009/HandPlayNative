@@ -23,4 +23,12 @@
     <string name="saveconfig">保存</string>
     <string name="removeconfig">清空</string>
     <string name="close">关闭</string>
+
+    <string name="confirm">确定</string>
+    <string name="cancel">取消</string>
+    <string name="vivox21_screen_mode_title">和屏幕保持相同配置</string>
+    <string name="vivox21_screen_mode_message">\t1、设置-&gt;显示和亮度-&gt;第三方应用显示\n \t2、选择魔加\n \t3、设置为全屏模式</string>
+    <string name="fdialog_assert_back_reminder">不要再次显示</string>
+    <string name="skill_show_tip_msg">需要打开悬浮框权限,是否开启?</string>
+    <string name="skill_show_tip_title">关键权限提示</string>
 </resources>

@@ -1,15 +1,18 @@
 package com.handscape.nativereflect.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 
 import com.handscape.nativereflect.command.DeviceConnectReceiveImpl;
+import com.handscape.nativereflect.plug.PlugManager;
 import com.handscape.sdk.HSManager;
-import com.handscape.sdk.inf.IHSBleScanCallBack;
+
 
 /***
  * 常驻后台服务
@@ -18,10 +21,19 @@ import com.handscape.sdk.inf.IHSBleScanCallBack;
 public class HandPlayService extends Service {
 
 
+    public static void startService(Context context, Bundle data) {
+        Intent intent = new Intent(context, HandPlayService.class);
+        intent.putExtras(data);
+        context.startService(intent);
+    }
+
     private HSManager mSdkManager;
 
     private HandlerThread handlerThread;
     private Handler mThreadHandler;
+
+    //插件管理类
+    private PlugManager plugManager;
 
     @Override
     public void onCreate() {
@@ -31,7 +43,22 @@ public class HandPlayService extends Service {
         handlerThread = new HandlerThread("");
         handlerThread.start();
         mThreadHandler = new Handler(handlerThread.getLooper());
+        plugManager = new PlugManager(this);
+    }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        //解析参数
+        if (intent != null && intent.getExtras() != null) {
+            Bundle bundle = intent.getExtras();
+
+            if(bundle.getBoolean(ServiceStartHelp.SHOW_PLUG,false)){
+                //显示悬浮球
+                String pkgName=bundle.getString(ServiceStartHelp.PKGNAME);
+                plugManager.show(pkgName);
+            }
+        }
+        return START_STICKY;
     }
 
 
@@ -43,19 +70,13 @@ public class HandPlayService extends Service {
         if (mThreadHandler != null) {
             mThreadHandler.post(runnable);
         }
-
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
         return new HandPlayBind();
     }
-
 
     public class HandPlayBind extends Binder {
 
@@ -63,10 +84,8 @@ public class HandPlayService extends Service {
         }
 
         public HandPlayService getService() {
-
             return HandPlayService.this;
         }
-
 
     }
 
