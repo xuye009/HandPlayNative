@@ -8,4 +8,6 @@ import android.view.MotionEvent;
 public interface IHSTouchCmdReceive {
     //指令接收器
     void onTouchCmdReceive(MotionEvent event);
+    //接收到的触摸指令字符
+    void onCmdStrReceive(String cmd);
 }

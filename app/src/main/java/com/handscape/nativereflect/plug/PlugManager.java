@@ -16,10 +16,14 @@ public class PlugManager {
     private Context context;
     private WindowManager windowManager;
     private String pkgName;
+
+    //标记是否是在设置按键页面
+
     //悬浮球
     private FloatBar floatBar;
     //设置界面
     private PlugMainBar plugMainBar;
+
 
     public PlugManager(Context context) {
         this.context = context;

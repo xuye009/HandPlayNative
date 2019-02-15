@@ -7,7 +7,6 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -15,14 +14,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import com.handscape.sdk.HSKeyPointIdManager;
 import com.handscape.sdk.HSManager;
 import com.handscape.sdk.inf.IHSTouchCmdReceive;
 import com.handscape.sdk.util.HSMultipleMotionBuilder;
 import com.handscape.sdk.util.HSPacketData;
 import com.handscape.sdk.util.HSTouchMapKeyUtils;
 import com.handscape.sdk.inf.IHSKeyBeanManager;
-import com.handscape.sdk.util.HSUtils;
 
 /**
  * 触摸指令调度器
@@ -33,10 +30,6 @@ public class HSTouchDispatch implements Runnable {
     public static final String TAG = HSTouchDispatch.class.getName();
 
     private Thread mDispatchThread;
-
-    private HandlerThread mHandlerThread;
-
-    private Handler mWriteCmdHandler;
 
     private final int MAX_COMMAND_COUNT = HSTouchCommand.MAX_TOUCH_COMMAND_COUNT;
     //存储当前需要执行的命令
@@ -52,18 +45,6 @@ public class HSTouchDispatch implements Runnable {
     private HSTouchCommand mCurrentCmd = null;
     //标记当前是否有指令在执行
     private boolean isEmptyPending = false;
-
-    private ViewGroup mServer;
-
-    public void setServer(ViewGroup mServer) {
-        this.mServer = mServer;
-    }
-
-    private Handler mUiHandler;
-
-    public void setUiHandler(Handler mUiHandler) {
-        this.mUiHandler = mUiHandler;
-    }
 
     private IHSKeyBeanManager commondManager;
 
@@ -81,9 +62,6 @@ public class HSTouchDispatch implements Runnable {
 
     private boolean flag = false;
 
-    private File mCmdFile;
-    private FileOutputStream fileOutputStream;
-    private FileChannel fileChannel;
 
 
     public HSTouchDispatch() {
@@ -94,16 +72,7 @@ public class HSTouchDispatch implements Runnable {
         mDispatchThread = new Thread(this);
         mDispatchThread.setPriority(Thread.MAX_PRIORITY);
         mDispatchThread.start();
-        //启动写文件进程
-        mHandlerThread = new HandlerThread("writecmd");
-        mHandlerThread.start();
-        mWriteCmdHandler = new Handler(mHandlerThread.getLooper());
-        mCmdFile = new File(HSManager.getContext().getExternalCacheDir() + "/touch.txt");
-        try {
-            fileOutputStream = new FileOutputStream(mCmdFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 
 
@@ -150,13 +119,6 @@ public class HSTouchDispatch implements Runnable {
             ArrayList<HSTouchCommand> queue = new ArrayList<>();
             this.mTouchCommandQueue.drainTo(queue);
             for (HSTouchCommand command : queue) {
-//                int oldId = command.getId();
-//                int keyCode = command.getkeyCode();
-//                int index = command.getIndex();
-//                int action = command.getAction();
-//                int newKeyCodeId = HSUtils.makeVirtualCode(oldId, keyCode, index);
-//                int nPid = HSKeyPointIdManager.getInstance().makePointId(action, keyCode, newKeyCodeId);
-//                command.setPointerId(nPid);
                 //去掉不可用的点
                 if (!HSTouchCommand.isInvalidTouch(command.getId())) {
                     if (command.isAfterNow()) {
@@ -166,13 +128,11 @@ public class HSTouchDispatch implements Runnable {
                     mCommands[command.getId() - 1] = command;
                     mCurrentCmd = command;
                     isEmptyPending = false;
-//                    String cmdStr = makeTouchEventString(mCurrentCmd);
                     String cmdStr = makeTouchTrimString(mCurrentCmd);
-                    sendTouchCommandData(cmdStr);
+                    String motionStr=makeTouchEventString(mCurrentCmd);
+                    sendTouchCommandData(cmdStr,motionStr);
                     if (this.mCurrentCmd.getAction() == MotionEvent.ACTION_UP) {
                         this.mCommands[this.mCurrentCmd.getId() - 1] = null;
-//                        removeTouchCommand(this.mCurrentCmd.getId());
-//                    this.mCurrentCmd.releaseTouch();
                     }
                     this.mCurrentCmd = null;
                     this.isEmptyPending = true;
@@ -223,49 +183,20 @@ public class HSTouchDispatch implements Runnable {
         }
     }
 
-    public void sendTouchCommandData(final String command) {
-        Log.v(TAG, getTouchCount() + " " + command);
+    public void sendTouchCommandData(final String command,final String eventStr) {
+        Log.v(TAG, getTouchCount() + " " + command+" "+eventStr);
         try {
             if (command == null) {
                 return;
             }
             if (!isEmptyPending) {
-                //将坐标转化为屏幕上的触控信息
-                mWriteCmdHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            fileChannel = fileOutputStream.getChannel();
-                            ByteBuffer byteBuffer = ByteBuffer.wrap(command.getBytes());
-                            fileChannel.write(byteBuffer,0);
-                            Log.v("xuyeCmd", ""+command);
-                        } catch (Exception e) {
-                            Log.v("xuyeCmd", "write error");
-                            e.printStackTrace();
-                        } finally {
 
-                        }
-                    }
-                });
-//                int rotation = HSTouchMapKeyUtils.getScreenRotation();
-////            final MotionEvent event = new HSMotionBuilder(rotation, screenWidth, screenHeight, commondManager).build(new HSPacketData("0|sendevent " + command));
-//                final MotionEvent event = new HSMultipleMotionBuilder(rotation, screenWidth, screenHeight, commondManager).build(new HSPacketData("0|sendevent " + command));
-////                Log.v(TAG,event+"");
-//                if (event == null) {
-//                    isEmptyPending = true;
-//                    return;
-//                }
-//                if (mServer != null && mUiHandler != null) {
-//                    mUiHandler.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            mServer.dispatchTouchEvent(event);
-//                        }
-//                    });
-//                }
-//                if (touchCmdReceive != null) {
-//                    touchCmdReceive.onTouchCmdReceive(event);
-//                }
+                if(touchCmdReceive!=null){
+                    touchCmdReceive.onCmdStrReceive(command);
+                    int rotation = HSTouchMapKeyUtils.getScreenRotation();
+                    final MotionEvent event = new HSMultipleMotionBuilder(rotation, screenWidth, screenHeight, commondManager).build(new HSPacketData("0|sendevent " + eventStr));
+                    touchCmdReceive.onTouchCmdReceive(event);
+                }
             }
         } catch (Exception e) {
             this.mCurrentCmd = null;
@@ -293,7 +224,6 @@ public class HSTouchDispatch implements Runnable {
 
 
     private String makeTouchTrimString(HSTouchCommand command) {
-
         StringBuilder builder = new StringBuilder();
         int count = getTouchCount();
         int id = command.getId();
@@ -310,11 +240,6 @@ public class HSTouchDispatch implements Runnable {
         }
         builder.append(" ");
         builder.append(touchedCmd2TrimString());
-
-//
-//        String result = "touch " + command.getAction()
-//                + " " + getTouchCount() + " " + command.getId()
-//                + " " + touchedCmd2TrimString();
         return builder.toString();
     }
 

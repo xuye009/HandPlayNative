@@ -46,7 +46,7 @@ public class FloatBar extends FrameLayout implements View.OnTouchListener {
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         imageView = new ImageView(getContext());
         imageView.setLayoutParams(new LinearLayout.LayoutParams(Utils.dp2px(50), Utils.dp2px(50)));
-        imageView.setAlpha(0.6f);
+        imageView.setAlpha(0.8f);
         refresh(isconnect);
         initLayoutParams();
         moveSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();

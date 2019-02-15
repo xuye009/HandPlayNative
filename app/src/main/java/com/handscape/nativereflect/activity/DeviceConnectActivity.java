@@ -188,6 +188,13 @@ public class DeviceConnectActivity extends Activity implements View.OnClickListe
         }
         mStatusTv.setText(getString(R.string.scanning));
         deviceList.clear();
+
+        if(handPlayService.getmSdkManager().isConnect()){
+            TouchTestActivity.startActivity(DeviceConnectActivity.this);
+            finish();
+            return;
+        }
+
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
