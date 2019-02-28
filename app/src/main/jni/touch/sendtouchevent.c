@@ -32,11 +32,19 @@ struct input_event inputEvent;
 
 static int fd = -1;
 
-void sendtouch(int action, int id, int isSingle, int x, int y) {
+void sendtouch(char *devpath,char *slot,int action, int id, int isSingle, int x, int y) {
     if (fd == -1) {
         fd = open(devpath, O_WRONLY | O_NONBLOCK);
     }
-    click_a(fd, id, isSingle, x, y);
+    printf("\n%d",isSingle);
+    if(strcmp(slot,"a")==0){
+        //a协议
+        click_a(fd, id, isSingle, x, y);
+    }
+    if(strcmp(slot,"b")==0){
+        //b协议
+        click_b(fd,id,isSingle,x,y);
+    }
 }
 
 

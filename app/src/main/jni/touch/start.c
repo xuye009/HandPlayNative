@@ -3,20 +3,20 @@
 #include <linux/uinput.h>
 #include <linux/input.h>
 #include <linux/types.h>
-#include "readcmd.c"
+#include "checkdev.c"
 
-void start();
+void checkdev();
 
 
 int main() {
     pid_t pid;
-    printf("start progress\n");
+    printf("start\n");
     pid = fork();
     if (pid == 0) {
         setsid();
         //获取进程id并且写入文件
         pid_t p=getpid();
-        printf("fork process success pid=%d\n",p);
+        printf("fork process success，new pid=%d\n",p);
         int pidFd=open(pidfile,O_RDWR,O_CREAT);
         char a[10]={0};
         sprintf(a,"%d",p);
@@ -30,8 +30,8 @@ int main() {
             }
         }
         close(pidFd);
-        //进入死循环
-        start();
+        //检查驱动
+        checkdev();
     } else if (pid > 0) {
     } else {
         printf("fork failed\n");

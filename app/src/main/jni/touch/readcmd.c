@@ -18,8 +18,7 @@
 
 #include "sendtouchevent.c"
 
-
-void sendtouch(int action, int id, int isSingle, int x, int y);
+void sendtouch(char *devpath,char *slot,int action, int id, int isSingle, int x, int y);
 
 int char2position(char aa, char bb, char cc, char dd);
 
@@ -70,20 +69,21 @@ void checkProgress() {
     close(pidFd);
 }
 
-
+char *devpath;
 /**
  * 读取触摸驱动
  * @return
  */
-void *readDriver() {
+void *readDriver(void *arg) {
     printf("readDriver\n");
     ufds = calloc(1, sizeof(ufds[0]));
     ufds[0].fd = open(devpath, O_RDONLY | O_NONBLOCK);
     ufds[0].events = POLLIN;
     inotify_add_watch(ufds[0].fd, devpath, IN_DELETE | IN_CREATE);
     nfds = 1;
-    while (flag) {
-        checkProgress();
+    printf("readDriver while\n");
+    while (1) {
+//        checkProgress();
         int pret = poll(ufds, nfds, 10);
         if (pret > 0) {
             //触摸屏有触摸事件
@@ -117,20 +117,23 @@ static int lastAction = 4;
 /**
  * 读取指令文件并发送给驱动
  */
-void sendTouchCmd() {
+void sendTouchCmd(char *dev,char *slot) {
     char buf[100] = {-1};
-    int fd = open(cmdPath, O_RDONLY, 00700);
-
+    int fd = open("/sdcard/Android/data/com.handscape.nativereflect/cache/touch.txt", O_RDONLY, 00700);
     if (fd > 0) {
+        printf("\nfd>0\n");
         char *p = mmap(NULL, sizeof(buf), PROT_READ, MAP_SHARED, fd, 0);
+        printf("\nmmap end=%s",p);
+        close(fd);
         if (p == NULL || p == (void *) -1) {
-            printf("mmap failed");
-            close(fd);
+            printf("\nmmap failed");
+            sleep(10);
+            sendTouchCmd(dev,slot);
             return;
         }
         printf("\nmmap success");
         close(fd);
-        while (flag) {
+        while (1) {
             checkProgress();
             //同步文件内容
             msync(p, 100, MS_SYNC);
@@ -160,28 +163,34 @@ void sendTouchCmd() {
                     //处于按下或者按住状态
                     if (downNumber - upNumber > 0) {
                         //按下状态
-                        sendtouch(mAction, id, 1, x, y);
+                        sendtouch(dev,slot,mAction, id, 1, x, y);
                     } else {
-                        sendtouch(mAction, id, 0, x, y);
+                        sendtouch(dev,slot,mAction, id, 0, x, y);
                     }
                 }
             }
             usleep(1 * 1000 * 25);
         }
-
-
     } else {
+        close(fd);
+        printf("\nopen failed");
         //获取不到文件,等待10秒，重新读取
         sleep(10);
-        sendTouchCmd();
+        sendTouchCmd(dev,slot);
     }
 }
 
-void start() {
-    pthread_t id;
-    int i;
-    pthread_create(&id, NULL, readDriver, NULL);
-    sendTouchCmd();
+void start(char *dev,char *slot) {
+    devpath=dev;
+    printf("\ndevpath=%s slot=%s \n",dev,slot);
+    pthread_t id,id2;
+    int ret=pthread_create(&id, NULL, readDriver, NULL);
+    if(ret){
+        printf("create pthread fail\n");
+    }
+    printf("create pthread success\n");
+    sendTouchCmd(dev,slot);
+    sleep(2);
 }
 
 

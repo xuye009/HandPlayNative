@@ -1,5 +1,6 @@
 
 #include <stdlib.h>
+#include "consts.h"
 
 /**
  * 触摸指令
@@ -13,10 +14,6 @@ struct touch_action {
     int y;
 };
 
-#define char2number(x) (x-'0');
-static const char *pidfile="/data/local/tmp/pid.txt";
-static const char *devpath = "/dev/input/event5";
-static const char *cmdPath="/storage/emulated/0/Android/data/com.handscape.nativereflect/cache/touch.txt";
 
 struct touch_action init(const char *buf) {
     struct touch_action action;
