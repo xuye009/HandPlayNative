@@ -7,8 +7,8 @@
 
 #define char2number(x) (x-'0');
 
-static const char *pidfile="/data/local/tmp/pid.txt";
-static const char *eventfile="/data/local/tmp/event.txt";
+//static const char *pidfile="/data/local/tmp/pid.txt";
+//static const char *eventfile="/data/local/tmp/event.txt";
 static const char *devpathList[] ={"/dev/input/event0", "/dev/input/event1","/dev/input/event2","/dev/input/event3",
                                    "/dev/input/event4","/dev/input/event5","/dev/input/event6",
                                    "/dev/input/event7","/dev/input/event8","/dev/input/event9",

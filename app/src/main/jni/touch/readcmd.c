@@ -47,26 +47,26 @@ static volatile int devicedownNumber = 0;
 struct input_event readEvent;
 
 void checkProgress() {
-    int pidFd = open(pidfile, O_RDONLY, O_CREAT);
-    if (pidFd > 0) {
-        char rpiddata[10] = {-1};
-        int rpid = read(pidFd, rpiddata, sizeof(rpiddata));
-        if (rpid > 0) {
-            char mypiddata[10] = {-1};
-            pid_t mypid = getpid();
-            sprintf(mypiddata, "%d", mypid);
-            if (strcmp(rpiddata, mypiddata) == 0) {
-                //是本进程
-            } else {
-                printf("\nprogress exit\n");
-                exit(0);
-            }
-        }
-    } else {
-        printf("\nread pid error\n");
-//        exit(0);
-    }
-    close(pidFd);
+//    int pidFd = open(pidfile, O_RDONLY, O_CREAT);
+//    if (pidFd > 0) {
+//        char rpiddata[10] = {-1};
+//        int rpid = read(pidFd, rpiddata, sizeof(rpiddata));
+//        if (rpid > 0) {
+//            char mypiddata[10] = {-1};
+//            pid_t mypid = getpid();
+//            sprintf(mypiddata, "%d", mypid);
+//            if (strcmp(rpiddata, mypiddata) == 0) {
+//                //是本进程
+//            } else {
+//                printf("\nprogress exit\n");
+//                exit(0);
+//            }
+//        }
+//    } else {
+//        printf("\nread pid error\n");
+////        exit(0);
+//    }
+//    close(pidFd);
 }
 
 char *devpath;

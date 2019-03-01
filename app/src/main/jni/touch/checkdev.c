@@ -116,7 +116,6 @@ void checkdev() {
                 break;
             }
         }
-
         for (int i = 0; i < 11; i++) {
             inotify_rm_watch(mufds[i].fd, wds[i]);
         }

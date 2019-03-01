@@ -19,6 +19,19 @@
 #include <sys/stat.h>
 #include <string.h>
 #define char2number(x) (x-'0');
+#define number2char(x) (x+'0');
+
+//进程启动成功的信息
+void send_fock_process_success(const pid_t pid){
+    char pidChar[10]={-1} ;
+    sprintf(pidChar,"%d",pid);
+    char msg[130]={0};
+    strcat(msg,"am start -n com.handscape.nativereflect/com.handscape.nativereflect.activity.DeviceActivationActivity --ei pid ");
+    strcat(msg,pidChar);
+    printf("msg=%s\n",msg);
+    system(msg);
+}
+
 //发送需要单指触摸的消息
 void send_need_singletouch_msg(){
     system("am start -n com.handscape.nativereflect/com.handscape.nativereflect.activity.DeviceActivationActivity --ei touch 1 ");
