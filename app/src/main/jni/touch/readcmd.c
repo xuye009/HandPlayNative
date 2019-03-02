@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 
 #include "sendtouchevent.c"
+#include "sendmsgtoactivity.c"
 
 void sendtouch(char *devpath, char *slot, int action, int id, int isSingle, int x, int y);
 
@@ -148,6 +149,7 @@ void sendTouchCmd(char *dev, char *slot) {
         }
         printf("\nmmap success");
         while (1) {
+            servicestatus=1;
 //            int check = checkProgress();
 //            if (check == 0) {
 //                break;
@@ -202,6 +204,7 @@ void sendTouchCmd(char *dev, char *slot) {
             }
             usleep(1 * 1000 * 25);
         }
+        servicestatus=0;
     } else {
         close(fd);
         printf("\nopen failed");
@@ -215,7 +218,7 @@ void sendCmd(char *dev, char *slot) {
     char buf[100] = {-1};
     while (1) {
         int fd = open(cmdPath, O_RDONLY | O_NONBLOCK);
-        if(fd<=0){
+        if (fd <= 0) {
             continue;
         }
         int readid = read(fd, buf, sizeof(buf));

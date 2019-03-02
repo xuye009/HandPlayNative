@@ -18,5 +18,9 @@ static const char *cmdPath = "/sdcard/Android/data/com.handscape.nativereflect/c
 static const char *devPath = "/sdcard/Android/data/com.handscape.nativereflect/cache/event.txt";
 static const char *slotPath = "/sdcard/Android/data/com.handscape.nativereflect/cache/slot.txt";
 static const char *pidPath = "/sdcard/Android/data/com.handscape.nativereflect/cache/pid.txt";
+static const char *checkPath = "/sdcard/Android/data/com.handscape.nativereflect/cache/service.txt";
+
+//标识状态
+static volatile int servicestatus=0;
 
 #endif //NATIVEHANDYPLAY_CONSTS_H

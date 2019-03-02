@@ -19,10 +19,8 @@
 #include <pthread.h>
 #include <time.h>
 #include <sys/time.h>
-#include "sendmsgtoactivity.c"
 #include "consts.h"
 #include "readcmd.c"
-
 
 void start(char *devPath, char *slot);
 

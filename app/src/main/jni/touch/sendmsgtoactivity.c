@@ -62,6 +62,16 @@ void send_slot_b(){
     system("am start -n com.handscape.nativereflect/com.handscape.nativereflect.activity.DeviceActivationActivity  --ei slot 1");
 }
 
+//发送当前服务状态
+//开启
+void send_service_success(){
+    system("am start -n com.handscape.nativereflect/com.handscape.nativereflect.activity.DeviceActivationActivity  --ei service 1");
+}
+//未开启
+void send_service_failed(){
+    system("am start -n com.handscape.nativereflect/com.handscape.nativereflect.activity.DeviceActivationActivity  --ei service 0");
+}
+
 //发送驱动位置
 void send_event_path(int i){
     if(i==0){
