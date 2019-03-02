@@ -36,7 +36,6 @@ void sendtouch(char *devpath,char *slot,int action, int id, int isSingle, int x,
     if (fd == -1) {
         fd = open(devpath, O_WRONLY | O_NONBLOCK);
     }
-    printf("\n%d",isSingle);
     if(strcmp(slot,"a")==0){
         //a协议
         click_a(fd, id, isSingle, x, y);
