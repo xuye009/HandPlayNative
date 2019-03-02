@@ -55,7 +55,7 @@ int checkProgress() {
         if (rpid > 0) {
             char mypiddata[10] = {-1};
             pid_t mypid = getpid();
-            printf("\ngetpid=%d",mypid);
+            printf("\ngetpid=%d", mypid);
             sprintf(mypiddata, "%d", mypid);
             if (strcmp(rpiddata, mypiddata) == 0) {
                 //是本进程
@@ -123,33 +123,30 @@ void *readDriver(void *arg) {
 static int lastAction = 4;
 
 
-struct clickAction{
+struct clickAction {
     int action;
     int x;
     int y;
 };
 
 struct clickAction clickActionArray[100];
+
 /**
  * 读取指令文件并发送给驱动
  */
 void sendTouchCmd(char *dev, char *slot) {
     char buf[100] = {-1};
-    printf("\nopen filepath=%s",cmdPath);
-    int fd = open(cmdPath, O_RDONLY, 00700);
+//    int fd = open(cmdPath, O_RDONLY, 00700);
+    int fd = open(cmdPath, O_RDONLY | O_NONBLOCK);
     if (fd > 0) {
-        printf("\nfd>0");
-        char *p = mmap(NULL, sizeof(buf), PROT_READ, MAP_SHARED, fd, 0);
-        printf("\nmmap end=%s", p);
+        char *p = mmap(NULL, sizeof(buf), PROT_READ, MAP_PRIVATE, fd, 0);
         close(fd);
         if (p == NULL || p == (void *) -1) {
-            printf("\nmmap failed");
             sleep(10);
             sendTouchCmd(dev, slot);
             return;
         }
         printf("\nmmap success");
-        close(fd);
         while (1) {
 //            int check = checkProgress();
 //            if (check == 0) {
@@ -171,8 +168,8 @@ void sendTouchCmd(char *dev, char *slot) {
                 //当前id对应的action
                 ////按下 0、移动 2、抬起 1
                 int mAction = char2number(p[position + 3]);
-                if (mAction == 0 || mAction == 2){
-                    mAction=0;
+                if (mAction == 0 || mAction == 2) {
+                    mAction = 0;
                 }
                 //x
                 int x = char2position(p[position + 5], p[position + 6], p[position + 7],
@@ -181,10 +178,14 @@ void sendTouchCmd(char *dev, char *slot) {
                 int y = char2position(p[position + 10], p[position + 11], p[position + 12],
                                       p[position + 13]);
 
-                if(clickActionArray[id].action==mAction&&clickActionArray[id].x==x&&clickActionArray[id].y==y){
-                    printf("\nrepeat");
-                }else{
-                    if (mAction == 0 || mAction == 2) {
+                if (x == 0 || y == 0) {
+                    continue;
+                }
+
+                if (clickActionArray[id].action == mAction && clickActionArray[id].x == x &&
+                    clickActionArray[id].y == y) {
+                } else {
+                    if (mAction == 0) {
                         printf("\ninfo action=%d x=%d y=%d ", mAction, x, y);
                         //屏幕处于按下或者按住状态
                         if (downNumber - upNumber > 0) {
@@ -194,9 +195,9 @@ void sendTouchCmd(char *dev, char *slot) {
                             sendtouch(dev, slot, mAction, id, 0, x, y);
                         }
                     }
-                    clickActionArray[id].action=mAction;
-                    clickActionArray[id].x=x;
-                    clickActionArray[id].y=y;
+                    clickActionArray[id].action = mAction;
+                    clickActionArray[id].x = x;
+                    clickActionArray[id].y = y;
                 }
             }
             usleep(1 * 1000 * 25);
@@ -210,17 +211,78 @@ void sendTouchCmd(char *dev, char *slot) {
     }
 }
 
+void sendCmd(char *dev, char *slot) {
+    char buf[100] = {-1};
+    while (1) {
+        int fd = open(cmdPath, O_RDONLY | O_NONBLOCK);
+        if(fd<=0){
+            continue;
+        }
+        int readid = read(fd, buf, sizeof(buf));
+//            int check = checkProgress();
+//            if (check == 0) {
+//                break;
+//            }
+        if (readid <= 0) {
+            continue;
+        }
+        //数量
+        int temp = char2number(buf[2]);
+        int count = char2number(buf[3]);
+        count = 10 * temp + count;
+        for (int i = 0; i < count; i++) {//循环读取每一个手指当前的动作
+            int position = 8 + i * 15;
+            int t = char2number(buf[position]);
+            //id
+            int id = char2number(buf[position + 1]);
+            id = id + t * 10;
+            //当前id对应的action
+            ////按下 0、移动 2、抬起 1
+            int mAction = char2number(buf[position + 3]);
+            if (mAction == 0 || mAction == 2) {
+                mAction = 0;
+            }
+            //x
+            int x = char2position(buf[position + 5], buf[position + 6], buf[position + 7],
+                                  buf[position + 8]);
+            //y
+            int y = char2position(buf[position + 10], buf[position + 11], buf[position + 12],
+                                  buf[position + 13]);
+
+            if (x == 0 || y == 0) {
+                continue;
+            }
+
+            if (clickActionArray[id].action == mAction && clickActionArray[id].x == x &&
+                clickActionArray[id].y == y) {
+            } else {
+                if (mAction == 0) {
+                    printf("\ninfo action=%d x=%d y=%d ", mAction, x, y);
+                    //屏幕处于按下或者按住状态
+                    if (downNumber - upNumber > 0) {
+                        //按下状态
+                        sendtouch(dev, slot, mAction, id, 1, x, y);
+                    } else {
+                        sendtouch(dev, slot, mAction, id, 0, x, y);
+                    }
+                }
+                clickActionArray[id].action = mAction;
+                clickActionArray[id].x = x;
+                clickActionArray[id].y = y;
+            }
+        }
+        close(fd);
+        usleep(1 * 1000 * 25);
+    }
+}
+
 void start(char *dev, char *slot) {
     devpath = dev;
     printf("\ndevpath=%s slot=%s \n", dev, slot);
-
-    pthread_t id, id2;
-    int ret = pthread_create(&id, NULL, readDriver, NULL);
-    if (ret) {
-        printf("create pthread fail\n");
-    }
-    printf("create pthread success\n");
+    pthread_t id;
+    pthread_create(&id, NULL, readDriver, NULL);
     sendTouchCmd(dev, slot);
+//    sendCmd(dev,slot);
     sleep(5);
 }
 
