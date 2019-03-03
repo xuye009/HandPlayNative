@@ -31,7 +31,7 @@ void *respondCheck(void *arg) {
             }
         }
         close(checkFd);
-        sleep(2);
+        usleep(1000*100);
     }
     return  NULL;
 }
