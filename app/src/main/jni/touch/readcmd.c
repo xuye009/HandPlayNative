@@ -89,10 +89,9 @@ void *readDriver(void *arg) {
     inotify_add_watch(ufds[0].fd, devpath, IN_DELETE | IN_CREATE);
     nfds = 1;
     while (1) {
-//        int check = checkProgress();
-//        if (check == 0) {
-//            break;
-//        }
+        if(exitflag==0){
+            break;
+        }
         int pret = poll(ufds, nfds, 10);
         if (pret > 0) {
             //触摸屏有触摸事件
@@ -109,20 +108,17 @@ void *readDriver(void *arg) {
                     printf("up %d\n", upNumber);
                 }
             }
-        } else {
-            //触摸屏没有触摸事件
-//            if(actionNumber>0){
-//                actionNumber=0;
-//            }
         }
         usleep(1 * 1000);
     }
-    close(ufds[0].fd);
-    exit(0);
+    if(exitflag==0){
+        close(ufds[0].fd);
+        exit(0);
+    }
+
 }
 
 static int lastAction = 4;
-
 
 struct clickAction {
     int action;
@@ -137,7 +133,6 @@ struct clickAction clickActionArray[100];
  */
 void sendTouchCmd(char *dev, char *slot) {
     char buf[100] = {-1};
-//    int fd = open(cmdPath, O_RDONLY, 00700);
     int fd = open(cmdPath, O_RDONLY | O_NONBLOCK);
     if (fd > 0) {
         char *p = mmap(NULL, sizeof(buf), PROT_READ, MAP_PRIVATE, fd, 0);
@@ -149,14 +144,16 @@ void sendTouchCmd(char *dev, char *slot) {
         }
         printf("\nmmap success");
         while (1) {
+            if(exitflag==0){
+                break;
+            }
             servicestatus=1;
-//            int check = checkProgress();
-//            if (check == 0) {
-//                break;
-//            }
             //同步文件内容
-            msync(p, 100, MS_SYNC);
-//            int mainAction = char2number(p[0]);
+            int asyn=msync(p, 100, MS_ASYNC);
+            if(asyn==-1){
+                //失败
+                break;
+            }
             //数量
             int temp = char2number(p[2]);
             int count = char2number(p[3]);
@@ -204,7 +201,15 @@ void sendTouchCmd(char *dev, char *slot) {
             }
             usleep(1 * 1000 * 25);
         }
-        servicestatus=0;
+        if(exitflag==0){
+            servicestatus=0;
+            exit(0);
+        }else{
+            printf("\nmmap failed");
+            //获取不到文件,等待10秒，重新读取
+            sleep(10);
+            sendTouchCmd(dev, slot);
+        }
     } else {
         close(fd);
         printf("\nopen failed");
@@ -214,75 +219,85 @@ void sendTouchCmd(char *dev, char *slot) {
     }
 }
 
-void sendCmd(char *dev, char *slot) {
-    char buf[100] = {-1};
-    while (1) {
-        int fd = open(cmdPath, O_RDONLY | O_NONBLOCK);
-        if (fd <= 0) {
-            continue;
-        }
-        int readid = read(fd, buf, sizeof(buf));
-//            int check = checkProgress();
-//            if (check == 0) {
-//                break;
+//void sendCmd(char *dev, char *slot) {
+//    char buf[100] = {-1};
+//    while (1) {
+//        if(exitflag==0){
+//            break;
+//        }
+//        int fd = open(cmdPath, O_RDONLY | O_NONBLOCK);
+//        if (fd <= 0) {
+//            continue;
+//        }
+//        int readid = read(fd, buf, sizeof(buf));
+////            int check = checkProgress();
+////            if (check == 0) {
+////                break;
+////            }
+//        if (readid <= 0) {
+//            continue;
+//        }
+//        //数量
+//        int temp = char2number(buf[2]);
+//        int count = char2number(buf[3]);
+//        count = 10 * temp + count;
+//        for (int i = 0; i < count; i++) {//循环读取每一个手指当前的动作
+//            int position = 8 + i * 15;
+//            int t = char2number(buf[position]);
+//            //id
+//            int id = char2number(buf[position + 1]);
+//            id = id + t * 10;
+//            //当前id对应的action
+//            ////按下 0、移动 2、抬起 1
+//            int mAction = char2number(buf[position + 3]);
+//            if (mAction == 0 || mAction == 2) {
+//                mAction = 0;
 //            }
-        if (readid <= 0) {
-            continue;
-        }
-        //数量
-        int temp = char2number(buf[2]);
-        int count = char2number(buf[3]);
-        count = 10 * temp + count;
-        for (int i = 0; i < count; i++) {//循环读取每一个手指当前的动作
-            int position = 8 + i * 15;
-            int t = char2number(buf[position]);
-            //id
-            int id = char2number(buf[position + 1]);
-            id = id + t * 10;
-            //当前id对应的action
-            ////按下 0、移动 2、抬起 1
-            int mAction = char2number(buf[position + 3]);
-            if (mAction == 0 || mAction == 2) {
-                mAction = 0;
-            }
-            //x
-            int x = char2position(buf[position + 5], buf[position + 6], buf[position + 7],
-                                  buf[position + 8]);
-            //y
-            int y = char2position(buf[position + 10], buf[position + 11], buf[position + 12],
-                                  buf[position + 13]);
+//            //x
+//            int x = char2position(buf[position + 5], buf[position + 6], buf[position + 7],
+//                                  buf[position + 8]);
+//            //y
+//            int y = char2position(buf[position + 10], buf[position + 11], buf[position + 12],
+//                                  buf[position + 13]);
+//
+//            if (x == 0 || y == 0) {
+//                continue;
+//            }
+//
+//            if (clickActionArray[id].action == mAction && clickActionArray[id].x == x &&
+//                clickActionArray[id].y == y) {
+//            } else {
+//                if (mAction == 0) {
+//                    printf("\ninfo action=%d x=%d y=%d ", mAction, x, y);
+//                    //屏幕处于按下或者按住状态
 
-            if (x == 0 || y == 0) {
-                continue;
-            }
 
-            if (clickActionArray[id].action == mAction && clickActionArray[id].x == x &&
-                clickActionArray[id].y == y) {
-            } else {
-                if (mAction == 0) {
-                    printf("\ninfo action=%d x=%d y=%d ", mAction, x, y);
-                    //屏幕处于按下或者按住状态
-                    if (downNumber - upNumber > 0) {
-                        //按下状态
-                        sendtouch(dev, slot, mAction, id, 1, x, y);
-                    } else {
-                        sendtouch(dev, slot, mAction, id, 0, x, y);
-                    }
-                }
-                clickActionArray[id].action = mAction;
-                clickActionArray[id].x = x;
-                clickActionArray[id].y = y;
-            }
-        }
-        close(fd);
-        usleep(1 * 1000 * 25);
-    }
-}
+
+
+//                        //按下状态
+//                        sendtouch(dev, slot, mAction, id, 1, x, y);
+//                    } else {
+//                        sendtouch(dev, slot, mAction, id, 0, x, y);
+//                    }
+//                }
+//                clickActionArray[id].action = mAction;
+//                clickActionArray[id].x = x;
+//                clickActionArray[id].y = y;
+//            }
+//        }
+//        close(fd);
+//        usleep(1 * 1000 * 25);
+//    }
+//    if(exitflag==0){
+//       exit(0);
+//    }
+//}
 
 void start(char *dev, char *slot) {
     devpath = dev;
     printf("\ndevpath=%s slot=%s \n", dev, slot);
     pthread_t id;
+    //读取驱动，获取当前是否正在触摸
     pthread_create(&id, NULL, readDriver, NULL);
     sendTouchCmd(dev, slot);
 //    sendCmd(dev,slot);

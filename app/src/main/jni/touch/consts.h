@@ -21,6 +21,9 @@ static const char *pidPath = "/sdcard/Android/data/com.handscape.nativereflect/c
 static const char *checkPath = "/sdcard/Android/data/com.handscape.nativereflect/cache/service.txt";
 
 //标识状态
-static volatile int servicestatus=0;
+static volatile int servicestatus = 0;
+//是否退出服务的标识,==0时退出服务
+static volatile int exitflag = 1;
+
 
 #endif //NATIVEHANDYPLAY_CONSTS_H
