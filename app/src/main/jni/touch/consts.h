@@ -20,6 +20,20 @@ static const char *slotPath = "/sdcard/Android/data/com.handscape.nativereflect/
 static const char *pidPath = "/sdcard/Android/data/com.handscape.nativereflect/cache/pid.txt";
 static const char *checkPath = "/sdcard/Android/data/com.handscape.nativereflect/cache/service.txt";
 
+//当前底层服务的版本号
+const static volatile int VERSION=1;
+
+//定义和上层APP通信的数据
+//退出进程
+const static  volatile int EXIT_CODE=9;
+//获取当前底层服务的版本
+const static volatile int CHECK_STATUS=1;
+//获取当前运行状态
+const static volatile int CHECK_VERSION=2;
+
+
+
+
 //标识状态
 static volatile int servicestatus = 0;
 //是否退出服务的标识,==0时退出服务

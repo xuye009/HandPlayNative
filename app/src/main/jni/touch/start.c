@@ -33,16 +33,29 @@ void *respondCheck(void *arg) {
                 break;
             }
             int checknumber=char2number(checkdata[0]);
-            if (checknumber == 1&&lastcheck!=checknumber) {
+
+            if(checknumber==EXIT_CODE){
+                //退出进程的消息
+                exitflag=0;
+                break;
+            }
+            if (lastcheck!=checknumber) {
                 lastcheck=checknumber;
                 //检查当前服务是否存活
-                printf("\ncheck");
-                if(servicestatus==0){
-                    send_service_failed();
-                }else{
-                    send_service_success();
+                if(checknumber == CHECK_STATUS){
+                    printf("\ncheck status");
+                    if(servicestatus==0){
+                        send_service_failed();
+                    }else{
+                        send_service_success();
+                    }
+                }
+                //检查当前底层的版本号码
+                if(checknumber==CHECK_VERSION){
+                    send_native_version(VERSION);
                 }
             }
+
             lastcheck=checknumber;
             usleep(1000*1000);
         }

@@ -32,6 +32,17 @@ void send_fock_process_success(const pid_t pid){
     system(msg);
 }
 
+//发送当前底层服务版本号码
+void send_native_version(int version){
+    char pidChar[2]={-1} ;
+    sprintf(pidChar,"%d",version);
+    char msg[130]={0};
+    strcat(msg,"am start -n com.handscape.nativereflect/com.handscape.nativereflect.activity.DeviceActivationActivity --ei version ");
+    strcat(msg,pidChar);
+    printf("msg=%s\n",msg);
+    system(msg);
+}
+
 //发送需要单指触摸的消息
 void send_need_singletouch_msg(){
     system("am start -n com.handscape.nativereflect/com.handscape.nativereflect.activity.DeviceActivationActivity --ei touch 1 ");
