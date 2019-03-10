@@ -19,8 +19,8 @@ void *respondCheck(void *arg) {
         close(checkFd);
         if (p == NULL || p == (void *) -1) {
             sleep(10);
-            respondCheck();
-            return;
+            respondCheck(NULL);
+            return NULL;
         }
         printf("\ncheck mmap success");
         while (1){
@@ -33,9 +33,8 @@ void *respondCheck(void *arg) {
                 break;
             }
             int checknumber=char2number(checkdata[0]);
-
+            //退出进程的消息
             if(checknumber==EXIT_CODE){
-                //退出进程的消息
                 exitflag=0;
                 break;
             }
@@ -67,7 +66,7 @@ void *respondCheck(void *arg) {
         printf("\ncheck open failed");
         //获取不到文件,等待10秒，重新读取
         sleep(10);
-        respondCheck();
+        respondCheck(NULL);
     }
     return  NULL;
 }

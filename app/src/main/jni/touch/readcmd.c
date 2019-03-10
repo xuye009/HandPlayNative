@@ -115,7 +115,7 @@ void *readDriver(void *arg) {
         close(ufds[0].fd);
         exit(0);
     }
-
+    return NULL;
 }
 
 static int lastAction = 4;
