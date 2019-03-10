@@ -18,26 +18,31 @@ void *respondCheck(void *arg) {
         char *p = mmap(NULL, sizeof(checkdata), PROT_READ, MAP_PRIVATE, checkFd, 0);
         close(checkFd);
         if (p == NULL || p == (void *) -1) {
-            sleep(10);
+            printf("\ncheck mmap failed");
+            sleep(5);
             respondCheck(NULL);
             return NULL;
         }
         printf("\ncheck mmap success");
         while (1){
             if(exitflag==0){
+                printf("\nexit");
                 break;
             }
             int asyn=msync(p, 100, MS_ASYNC);
             if(asyn==-1){
+                printf("\nmasync failed");
                 //失败
                 break;
             }
-            int checknumber=char2number(checkdata[0]);
+            int checknumber=char2number(p[0]);
             //退出进程的消息
             if(checknumber==EXIT_CODE){
+                printf("\nexit break");
                 exitflag=0;
                 break;
             }
+            printf("\ncheck data lset=%d  check=%d",lastcheck,checknumber);
             if (lastcheck!=checknumber) {
                 lastcheck=checknumber;
                 //检查当前服务是否存活
@@ -54,12 +59,14 @@ void *respondCheck(void *arg) {
                     send_native_version(VERSION);
                 }
             }
-
             lastcheck=checknumber;
-            usleep(1000*1000);
+            sleep(3);
         }
         if(exitflag==0){
             exit(0);
+        }else{
+            sleep(2);
+            respondCheck(NULL);
         }
     }else{
         //打开失败，重新打开

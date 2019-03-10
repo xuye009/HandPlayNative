@@ -126,7 +126,7 @@ struct clickAction {
     int y;
 };
 
-struct clickAction clickActionArray[100];
+static struct clickAction clickActionArray[100]={-1};
 
 /**
  * 读取指令文件并发送给驱动
@@ -199,7 +199,7 @@ void sendTouchCmd(char *dev, char *slot) {
                     clickActionArray[id].y = y;
                 }
             }
-            usleep(1 * 1000 * 25);
+            usleep(1000 * 25);
         }
         if(exitflag==0){
             servicestatus=0;
